@@ -4,7 +4,9 @@ CDP Proxy HTTP 客户端 — 封装对 localhost:3456 的所有 API 调用。
 
 import asyncio
 import json
+import os
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -17,26 +19,47 @@ CHECK_DEPS = CDP_SCRIPTS / "check-deps.mjs"
 PROXY_PORT = 3456
 BASE_URL = f"http://localhost:{PROXY_PORT}"
 
-# Node.js 路径（自动检测，兼容不同环境）
-_NODE_PATHS = [
-    Path("/Users/haibiaoliu/.workbuddy/binaries/node/versions/22.22.2/bin/node"),
-    "/opt/homebrew/bin/node",
-    "/usr/local/bin/node",
-    "/usr/bin/node",
-]
-NODE_PATH: str | None = None
-for p in _NODE_PATHS:
-    if isinstance(p, Path) and p.is_file():
-        NODE_PATH = str(p)
-        break
-    elif isinstance(p, str) and Path(p).is_file():
-        NODE_PATH = p
-        break
-if not NODE_PATH:
+# Node.js 路径（自动检测，兼容 macOS / Windows / Linux）
+def _detect_node() -> str | None:
+    """按优先级查找 node 可执行文件。"""
+    candidates: list[str] = []
+
+    # Windows 常见路径
+    if sys.platform == "win32":
+        prog_files = os.environ.get("ProgramFiles", r"C:\Program Files")
+        prog_files_x86 = os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")
+        appdata = os.environ.get("APPDATA", "")
+        candidates = [
+            str(Path(prog_files) / "nodejs" / "node.exe"),
+            str(Path(prog_files_x86) / "nodejs" / "node.exe"),
+            str(Path(appdata) / "npm" / "node.exe"),
+        ]
+    # macOS 常见路径
+    elif sys.platform == "darwin":
+        candidates = [
+            str(Path.home() / ".workbuddy/binaries/node/versions/22.22.2/bin/node"),
+            "/opt/homebrew/bin/node",
+            "/usr/local/bin/node",
+            "/usr/bin/node",
+        ]
+    # Linux 常见路径
+    else:
+        candidates = [
+            str(Path.home() / ".workbuddy/binaries/node/versions/22.22.2/bin/node"),
+            "/usr/local/bin/node",
+            "/usr/bin/node",
+        ]
+
+    for c in candidates:
+        if Path(c).is_file():
+            return c
+
+    # 兜底：从 PATH 里找
     import shutil
-    _node_shutil = shutil.which("node")
-    if _node_shutil:
-        NODE_PATH = _node_shutil
+    return shutil.which("node") or None
+
+
+NODE_PATH = _detect_node()
 
 
 class CDPClient:
