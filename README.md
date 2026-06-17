@@ -46,6 +46,123 @@ cp .env.example .env
 
 ### 第 5 步：启动
 
+---
+
+## 使用 PyCharm 运行（推荐）
+
+### 1. 打开项目
+
+1. 启动 PyCharm → `File` → `Open`
+2. 选择 `offeragent` 文件夹 → 点 `OK`
+3. PyCharm 会自动识别 Python 项目
+
+### 2. 配置 Python 解释器
+
+1. 右下角点 Python 版本 → `Interpreter Settings`
+2. 点 `Add Interpreter` → `Add Local Interpreter`
+3. 选择 `Virtualenv Environment` → `New environment`
+   - Python 版本选 **3.11+**
+   - 勾选 `Inherit global site-packages`（可选）
+4. 创建后，打开 PyCharm 终端（`View` → `Tool Windows` → `Terminal`）
+   执行：`pip install -e .`
+
+### 3. 配置运行/调试（Run Configuration）
+
+在 PyCharm 顶部运行配置下拉框 → `Edit Configurations` → 点 `+` 新建以下配置：
+
+#### 配置一：启动 Web 界面（最常用）
+
+| 字段 | 值 |
+|------|-----|
+| Name | `web` |
+| Script path | 选 `src/web.py` |
+| Parameters | `start`（或直接留空，使用默认的 `start_server`）|
+| Working directory | `/your/path/to/offeragent` |
+| Environment variables | `DEEPSEEK_API_KEY=sk-你的key`（或留空，读 `.env` 文件）|
+
+> 实际操作：Script path 填 `src/web.py`，Parameters 填 `start`，
+> 或者直接运行 `src/web.py` 的 `start_server()` 函数。
+
+**更简单的方式（推荐）：**
+
+直接运行 `src/web.py`，PyCharm 会自动识别 `__main__` 入口。
+你需要确保 `config.yaml` 的 `llm.api_key` 已填写，或设置了环境变量。
+
+#### 配置二：搜索职位
+
+| 字段 | 值 |
+|------|-----|
+| Name | `search` |
+| Module name | `src.main` |
+| Parameters | `search` |
+| Working directory | `/your/path/to/offeragent` |
+
+#### 配置三：查看统计
+
+| 字段 | 值 |
+|------|-----|
+| Name | `stats` |
+| Module name | `src.main` |
+| Parameters | `stats` |
+
+#### 配置四：投递
+
+| 字段 | 值 |
+|------|-----|
+| Name | `apply` |
+| Module name | `src.main` |
+| Parameters | `apply` |
+| 备注 | 需先在 `config.yaml` 开启 `apply.enabled: true` |
+
+### 4. 设置环境变量（API Key）
+
+**方式 A：在 Run Configuration 里设置**
+1. 打开 Run Configuration → `Edit Configurations`
+2. 选你的配置（如 `web`）
+3. 找到 `Environment variables` → 点 `...` 按钮
+4. 添加：`DEEPSEEK_API_KEY` = `sk-你的key`
+5. 点 `OK` 保存
+
+**方式 B：在项目根目录创建 `.env` 文件**
+```bash
+# 项目根目录/offeragent/.env
+DEEPSEEK_API_KEY=sk-你的key
+```
+PyCharm 的 `python-dotenv` 插件会自动读取（需安装插件）。
+
+### 5. 开启 Chrome 远程调试（每次运行前）
+
+PyCharm 终端（`Alt+F12` / `⌥F12`）执行：
+
+**macOS：**
+```bash
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+  --remote-debugging-port=9222 \
+  --user-data-dir=/tmp/chrome-offeragent
+```
+
+**Windows：**
+```cmd
+"C:\Program Files\Google\Chrome\Application\chrome.exe" ^
+  --remote-debugging-port=9222 ^
+  --user-data-dir=%TEMP%\chrome-offeragent
+```
+
+> 提示：可以把上面命令保存为 `start-chrome.sh`（macOS）或 `start-chrome.bat`（Windows），
+> 每次点运行配置之前双击执行即可。
+
+### 6. 运行
+
+1. 确保 Chrome 远程调试已开启（步骤 5）
+2. PyCharm 顶部选 `web` 运行配置
+3. 点 ▶ `Run` 按钮（或 `Shift+F10`）
+4. 控制台显示 `offeragent Web 界面: http://127.0.0.1:8800` 即成功
+5. 打开浏览器访问 `http://127.0.0.1:8800`
+
+---
+
+## 使用命令行运行
+
 **方式一：Web 界面（推荐）**
 
 ```bash
