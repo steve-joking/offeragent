@@ -43,5 +43,4 @@ temp/
 
 # 浏览器自动化产生的截图/缓存
 screenshots/
-cdp-*/
 browser-cache/
