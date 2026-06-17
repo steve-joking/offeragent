@@ -1,0 +1,24 @@
+[project]
+name = "offeragent"
+version = "0.1.0"
+description = "智能招聘智能体 — 自动搜索、筛选、投递职位"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27.0",
+    "openai>=1.30.0",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+    "pydantic>=2.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+
+[project.scripts]
+offeragent = "src.main:main"
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "." }

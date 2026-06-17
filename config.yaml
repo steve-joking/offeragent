@@ -1,0 +1,43 @@
+# 搜索配置
+search:
+  # 默认关键词（用户在 Web 页面输入时覆盖此项）
+  keywords:
+    - "Java后端开发"
+    - "Java工程师"
+    - "Java开发工程师"
+    - "后端开发工程师"
+  platforms:
+    - name: zhaopin
+      base_url: "https://www.zhaopin.com"
+  max_pages: 3           # 每个关键词最多翻页数
+  city: ""               # 城市限制，留空为全国
+
+# 投递配置
+apply:
+  enabled: false          # 默认不自动投递，需手动开启
+  interval_seconds: 5     # 每次投递间隔秒数（会加随机 1-5s）
+  max_per_day: 30         # 每天最多投递数量
+  pause_every: 10         # 每投 N 份后暂停
+  pause_seconds: 60       # 暂停秒数
+
+# LLM 配置
+llm:
+  provider: "deepseek"     # openai / azure / custom / deepseek
+  api_key: ""             # 留空则读取环境变量 DEEPSEEK_API_KEY
+  base_url: "https://api.deepseek.com"   # DeepSeek API 地址
+  model: "deepseek-chat" # 筛选用轻量模型省成本
+  match_threshold: 70     # 简历匹配分数阈值 (0-100)
+  batch_size: 5           # 每批最多同时发 LLM 请求
+
+# 简历配置
+resume:
+  path: "resume.md"       # 简历文件路径
+
+# Web 界面
+web:
+  host: "127.0.0.1"
+  port: 8800
+
+# 数据库
+database:
+  path: "data/offeragent.db"
